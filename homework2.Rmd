@@ -1,0 +1,107 @@
+---
+title: "homework2"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-11-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyverse)
+ddh <- read_csv("homework-2/ddh.csv")
+```
+
+
+
+```{r cars}
+# Sample data
+
+# Sample data
+
+
+overall_range_twa = range(ddh$glutwa)
+overall_range_range = range(ddh$glurange)
+overall_range_sd = range(ddh$glusd)
+
+ddh <- ddh%>%
+  mutate(delay = if_else(delayed_fn == 0, "IGF", "LGD"))
+  
+
+par(mfrow = c(1, 3))
+# Create a boxplot stratified by the 'Category' variable
+boxplot(glutwa ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose TWA", xlab = "TWA", ylab = "", ylim = overall_range_twa, outline = FALSE, width = c(0.5,0.5))
+
+boxplot(glurange ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose Range", xlab = "Range", ylab = "", ylim = overall_range_range, outline = FALSE, width = c(0.5,0.5))
+
+boxplot(glusd ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose SD", xlab = "SD", ylab = "", ylim = overall_range_sd, outline = FALSE, width = c(0.5,0.5))
+
+
+```
+
+```{r}
+model<- glm(
+  delayed_fn ~ glutwa + glurange + glusd,
+  data = ddh,
+  family = "binomial"
+)
+
+model_adj<- glm(
+  delayed_fn ~ glutwa + glurange + glusd +
+    d_age + d_cod + hemo_instability,
+  data = ddh,
+  family = "binomial"
+)
+
+model_TWA<- glm(
+  delayed_fn ~ glutwa,
+  data = ddh,
+  family = "binomial"
+)
+
+model_TWA_adj<- glm(
+  delayed_fn ~ glutwa +
+    d_age + d_cod + hemo_instability,
+  data = ddh,
+  family = "binomial"
+)
+
+model_range <- glm(
+  delayed_fn ~ glurange,
+  data = ddh,
+  family = "binomial"
+)
+
+model_range_adj <- glm(
+  delayed_fn ~ glurange + 
+    d_age + d_cod + hemo_instability,
+  data = ddh,
+  family = "binomial"
+)
+
+model_sd <- glm(
+  delayed_fn ~ glusd,
+  data = ddh,
+  family = "binomial"
+)
+
+model_sd_adj <- glm(
+  delayed_fn ~ glusd +
+    d_age + d_cod + hemo_instability,
+  data = ddh,
+  family = "binomial"
+)
+
+summary(model_TWA)
+summary(model_TWA_adj)
+summary(model_range)
+summary(model_range_adj)
+summary(model_sd)
+summary(model_sd_adj)
+
+summary(model)
+summary(model_adj)
+
+```
+
