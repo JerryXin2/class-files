@@ -10,6 +10,7 @@ date: "2023-11-27"
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
 library(tidyverse)
+library(ggpubr)
 ddh <- read_csv("homework-2/ddh.csv")
 ```
 
@@ -31,34 +32,45 @@ ddh <- ddh%>%
 
 par(mfrow = c(1, 3))
 # Create a boxplot stratified by the 'Category' variable
-boxplot(glutwa ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose TWA", xlab = "TWA", ylab = "", ylim = overall_range_twa, outline = FALSE, width = c(0.5,0.5))
 
-boxplot(glurange ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose Range", xlab = "Range", ylab = "", ylim = overall_range_range, outline = FALSE, width = c(0.5,0.5))
+# ggplot(ddh, aes(x = glutwa, fill = delay)) +
+#   geom_boxplot(color = "black") +
+#   scale_fill_manual(values = c("white", "darkgrey")) +
+#   labs(title = "Boxplot of x Stratified by y",
+#        x = "Group",
+#        y = "Variable x")
 
-boxplot(glusd ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose SD", xlab = "SD", ylab = "", ylim = overall_range_sd, outline = FALSE, width = c(0.5,0.5))
+a= ggplot(ddh, aes(x = delay, y = glutwa, fill = delay)) + geom_boxplot(outlier.shape = NA, show.legend =  FALSE) + labs(title = "", x ="TWA", y = "") + scale_y_continuous(trans= 'log2', breaks = c(50,100,200,300,400,500), limits = c(50, 500)) + scale_fill_manual(values = c(IGF = "white", LGD = "darkgray"))
 
+b = ggplot(ddh, aes(x = delay, y = glurange, fill = delay)) + geom_boxplot(outlier.shape = NA, show.legend =  FALSE) + labs(title = "", x ="Range", y = "") + scale_y_continuous(trans= 'log10', breaks = c(1,10,100,1000), limits = c(1, 1000)) + scale_fill_manual(values = c(IGF = "white", LGD = "darkgray"))
 
+c = ggplot(ddh, aes(x = delay, y = glusd, fill = delay)) + geom_boxplot(outlier.shape = NA, show.legend =  FALSE) + labs(title = "", x ="SD", y = "") + scale_y_continuous(trans= 'log10', breaks = c(1,10,100,200,300), limits = c(1,300)) + scale_fill_manual(values = c(IGF = "white", LGD = "darkgray"))
+
+# boxplot(glutwa ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose TWA", xlab = "TWA", ylab = "", ylim = overall_range_twa, outline = FALSE, width = c(0.5,0.5), frame = FALSE, log ='y') 
+# 
+# boxplot(glurange ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose Range", xlab = "Range", ylab = "", ylim = overall_range_range, outline = FALSE, width = c(0.5,0.5), frame = FALSE, log ='y') 
+# 
+# boxplot(glusd ~ delay, data = ddh, col = c("white", "darkgray"), main = "Boxplot of Glucose SD", xlab = "SD", ylab = "", outline = FALSE,ylim = overall_range_sd, width = c(0.5,0.5), frame = FALSE, log ="y") 
+
+plot <- ggarrange(a, b, c,
+          ncol = 3, nrow = 1)
+
+annotate_figure(plot, top = "Donor glucose measures, mg/dL")
 ```
 
 ```{r}
-model<- glm(
-  delayed_fn ~ glutwa + glurange + glusd,
-  data = ddh,
-  family = "binomial"
-)
-
-model_adj<- glm(
-  delayed_fn ~ glutwa + glurange + glusd +
-    d_age + d_cod + hemo_instability,
-  data = ddh,
-  family = "binomial"
-)
-
-model_TWA<- glm(
-  delayed_fn ~ glutwa,
-  data = ddh,
-  family = "binomial"
-)
+# model<- glm(
+#   delayed_fn ~ glutwa + glurange + glusd,
+#   data = ddh,
+#   family = "binomial"
+# )
+# 
+# model_adj<- glm(
+#   delayed_fn ~ glutwa + glurange + glusd +
+#     d_age + d_cod + hemo_instability,
+#   data = ddh,
+#   family = "binomial"
+# )
 
 model_TWA_adj<- glm(
   delayed_fn ~ glutwa +
@@ -67,21 +79,10 @@ model_TWA_adj<- glm(
   family = "binomial"
 )
 
-model_range <- glm(
-  delayed_fn ~ glurange,
-  data = ddh,
-  family = "binomial"
-)
 
 model_range_adj <- glm(
   delayed_fn ~ glurange + 
     d_age + d_cod + hemo_instability,
-  data = ddh,
-  family = "binomial"
-)
-
-model_sd <- glm(
-  delayed_fn ~ glusd,
   data = ddh,
   family = "binomial"
 )
@@ -93,15 +94,12 @@ model_sd_adj <- glm(
   family = "binomial"
 )
 
-summary(model_TWA)
 summary(model_TWA_adj)
-summary(model_range)
 summary(model_range_adj)
-summary(model_sd)
 summary(model_sd_adj)
 
-summary(model)
-summary(model_adj)
+# summary(model)
+# summary(model_adj)
 
 ```
 
