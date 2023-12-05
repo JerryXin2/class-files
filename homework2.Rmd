@@ -131,6 +131,8 @@ a = confint(model_TWA, "log2(glutwa)")
 exp(a[1])
 exp(a[2])
 
+summary(model_TWA)$coefficients[,4]  
+
 #Adjusted TWA
 print("Adjusted TWA")
 
@@ -140,12 +142,16 @@ b = confint(model_TWA_adj, "log2(glutwa)")
 exp(b[1])
 exp(b[2])
 
+summary(model_TWA_adj)$coefficients[,4]  
+
 #Unadjusted Range
 exp(0.03300)
 
 c = confint(model_range, "log2(glurange)", level = 0.975)
 exp(c[1])
 exp(c[2])
+
+summary(model_range)$coefficients[,4]  
 
 #Adjusted Range
 
@@ -155,6 +161,8 @@ d = confint(model_range_adj, "log2(glurange)", level = 0.975)
 exp(d[1])
 exp(d[2])
 
+summary(model_range_adj)$coefficients[,4]  
+
 #Unadjusted SD
 
 exp(0.11106)
@@ -163,6 +171,8 @@ e = confint(model_sd, "log2(glusd)", level = 0.975)
 exp(e[1])
 exp(e[2])
 
+summary(model_sd)$coefficients[,4]  
+
 #Adjusted SD
 
 exp(0.118659)
@@ -170,6 +180,8 @@ exp(0.118659)
 f = confint(model_sd_adj, "log2(glusd)", level = 0.975)
 exp(f[1])
 exp(f[2])
+
+summary(model_sd_adj)$coefficients[,4]  
 
 ```
 
